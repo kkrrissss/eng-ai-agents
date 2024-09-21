@@ -1,0 +1,26 @@
+version: '3'  # Specify the version to avoid deprecated warnings
+
+services:
+  eng-ai-agents:
+    ports:
+      - "8888:8888"  # Map port 8888 from the container to the host
+    build:
+      context: "."  # Build context is the current directory
+      dockerfile: ./docker/Dockerfile.dev.gpu  # Path to the Dockerfile
+    image: eng-ai-agents  # Name of the Docker image
+    shm_size: '8gb'  # Shared memory size for the container
+    user: vscode  # Run as the vscode user
+    command: /bin/sh -c "while sleep 1000; do :; done"  # Keep the container running
+    networks:
+      - eng-ai-agents-net  # Network configuration
+    volumes:
+      - .:/workspace  # Mount the current directory (eng-ai-agents) to /workspace in the container
+    working_dir: /workspace  # Set the working directory inside the container to /workspace
+
+networks:
+  eng-ai-agents-net:
+    driver: bridge  # Use the bridge driver for networking
+
+volumes:
+  rye-cache:  # Define a named volume for caching (if needed)
+

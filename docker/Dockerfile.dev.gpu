@@ -1,32 +1,27 @@
-#FROM debian:bookworm-slim as builder
+# Base image and initial setup
 FROM mcr.microsoft.com/vscode/devcontainers/python:dev-3.11-bookworm AS builder
-
-# Install hadolint
-# RUN curl -Lo /usr/local/bin/hadolint https://github.com/hadolint/hadolint/releases/download/v2.12.1-beta/hadolint-Linux-x86_64
-# RUN chmod +x /usr/local/bin/hadolint
 
 WORKDIR /opt
 
 ENV RYE_HOME="/opt/rye"
 ENV PATH="$RYE_HOME/shims:$PATH"
 
-# hadolint ignore=DL3008
+# Install dependencies
 RUN \
     --mount=type=cache,target=/var/lib/apt/lists \
     --mount=type=cache,target=/var/cache/apt/archives \
     apt-get update && \
     apt-get install -y --no-install-recommends \
         ca-certificates \
-        curl  \
+        curl \
         unzip && \
     rm -rf /var/lib/apt/lists/*
 
-# hadolint ignore=DL3008
 RUN apt-get clean && \
     apt-get update && \
     apt-get install -y --no-install-recommends --fix-missing \
         build-essential binutils \
-       cmake cmake-qt-gui curl \
+        cmake cmake-qt-gui curl \
         dbus-x11 \
         ffmpeg \
         gdb gcc g++ gfortran git \
@@ -82,9 +77,9 @@ ENV RYE_HOME="/opt/rye"
 ENV PATH="$RYE_HOME/shims:$PATH"
 
 # Quarto
-RUN curl -LO https://quarto.org/download/latest/quarto-linux-amd64.deb && \
-    dpkg -i quarto-linux-amd64.deb
-#RUN quarto install tinytex
+RUN curl -LO https://quarto.org/download/latest/quarto-linux-arm64.deb && \
+    dpkg -i quarto-linux-arm64.deb || \
+    apt-get -f install
 
 ENV PYTHONUNBUFFERED True
 
